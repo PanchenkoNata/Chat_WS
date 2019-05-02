@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='/javascripts/script.js'></script>
+    <!-- <script>
+      const socket = io();
+      // var socket = io.connect('http://localhost');
+
+      // socket.emit('invite', { invite: 'Kyiv front'}, (data) => {
+      //     console.log(data);
+      //   });
+
+      setTimeout(() => {
+        socket.emit('invite', { city: 'Kyiv'}, (data) => {
+          console.log(data);
+        });
+      }, 5 * 100);
+
+      // socket.on('city', (data) => {
+      //   console.log(data);
+      //   socket.emit('invite', data);
+      // });
+    </script> -->
+  </body>
+</html>
