@@ -16,14 +16,16 @@ module.exports.init = async (server) => {
     socket.join('all');
     
     socket.on('/chat/history/get', () => {
+      // get last 20 messages from DB
       Message
         .find({})
         .sort({ createdAt: -1 })
         .limit(20)
-        .sort({ createdAt: 1 })
         .lean()
         .exec((error, messages) => {
           if(!error) {
+            // we get messages in reverse order, but we need return messages in direct order
+            messages.reverse();
             socket.emit('/chat/history/show', messages);
             socket.to('all').emit('/chat/history/show', messages);
           }
@@ -34,12 +36,12 @@ module.exports.init = async (server) => {
       console.log(`back: ${content}`);
       const user = socket.id;
 
-      const messageIn = new Message ({
+      const messageInput = new Message ({
         content: content,
         user: user,
       });
 
-      const message = await messageIn.save();
+      const message = await messageInput.save();
       
       socket.emit('/chat/message/add', message);
       socket.to('all').emit('/chat/message/add', message);
