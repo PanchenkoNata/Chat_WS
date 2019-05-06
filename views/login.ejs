@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/local.css" />
+</head>
+<body class="bg-auth">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <div class="bg-auth-panel">
+                <div class="panel-body">
+                    <h2 class="text-primary">Log In Page</h2>
+                    <hr/>
+                    <% if (error) { %>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="alert alert-danger">
+                                <strong>Error!</strong> <%= error %>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                    <form action="" method="post" role="form">
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="userName" value="<%= data.userName %>" maxlength="20" placeholder="Your Name">
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Log In</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+</div>
+<script src="/javascripts/login.js"></script>
+</body>
+</html>

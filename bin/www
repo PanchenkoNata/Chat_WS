@@ -6,12 +6,16 @@ require('config');
 
 const dbRunner = require('./runners/db');
 const webRunner = require('./runners/web');
+const seederUserRunner = require('./runners/seeders/user');
+const seederRoomRunner = require('./runners/seeders/room');
 
 require('events').EventEmitter.defaultMaxListeners = Infinity;
 
 Promise.resolve()
   .then(dbRunner)
   .then(webRunner)
+  .then(seederUserRunner)
+  .then(seederRoomRunner)
   .then(() => {
     console.log('\x1b[42m\x1b[30m ====> Ready to work <==== \x1b[0m');
   })

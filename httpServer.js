@@ -3,7 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
+const session = require('express-session');
+const config = require('config');
+const loginController = require('controllers/login');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
@@ -18,6 +20,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session
+app.use(session({
+  name: config.get('session:name'),
+  resave: false,
+  saveUninitialized: false,
+  secret: config.get('session:secret'),
+  cookie: {
+    maxAge: config.get('session:livetime'),
+    sameSite: true,
+    secure: config.get('session:in_prod'),
+  }
+}));
+
+// configure user's allowance to page
+app.use(loginController.allowUserToPage);
 
 // Routes prefix
 app.use('/', indexRouter);
