@@ -19,14 +19,29 @@ module.exports.init = async (server) => {
 
     socket.emit('connected', 'You are connected to chat!');
     
-    socket.on('/chat/history/get', () => {
+    socket.on('/chat/history/get', async () => {
       // get room.id from route
       // get userId from session
       // get room.users[].dateConnected for userId
+      const sidOfCurentSocket = getId.SessionIdFromSocket(socket);
+      const session = await Session.findOne({ ID: sidOfCurentSocket });
+      const sUserId = session.userId;
+
+      // room has user with session.userId
+      // const room = await Room.findOne({ name: 'all', users: { $elemMatch: { userId: sUserId } } });
+
+      const room = await Room.findOne({ name: 'all' });
+      let roomUserDateConnected;
+      room.users.forEach((user) => {
+        if(String(user.userId) === String(sUserId)) {
+          roomUserDateConnected = user.dateConnected;
+          return;
+        }
+      });
       // { cteatedAt: { $gte: roomUserDateConnected}} -- $gte is '<=' compare
-      Message
-        .find()
-        .sort({ createdAt: -1 })
+      await Message
+        .find({ createdAt: { $gte: roomUserDateConnected } })
+        .sort({ createdAt: -1 })  
         .limit(5)
         .lean()
         .exec((error, messages) => {
@@ -38,58 +53,30 @@ module.exports.init = async (server) => {
     });
     
     socket.on('/chat/message/send', async (content) => {
-      console.log(`back: ${content}`);
       // get userId of curent socket
       const sidOfCurentSocket = getId.SessionIdFromSocket(socket);
-      const session = await Session.findOne({ id: sidOfCurentSocket });
-      const userId = session.userId;
-      console.log(`get userId of curent socket --- ${userId}`);
-
-      // const room = currentRoom;
+      const session = await Session.findOne({ ID: sidOfCurentSocket });
+      const sUserId = session.userId;
       const room = await Room.findOne({ name: 'all' });
+
       // create message input from current socket
       const messageInput = new Message ({
         content: content,
-        user: userId,
+        user: sUserId,
         room: room.id
       });
+      
       // save messageInput
       const message = await messageInput.save();
-      
-      // emit message to all users from room.name
-      // socket.emit('/chat/message/add', message);
-      // socket.broadcast.emit('/chat/message/add', message);
-
-      const usersFromRoom = room.users;
       const ioSockets = io.sockets.connected;
-      // create array of all connected sockets
-      let sockets = [];
-      // console.log(ioSockets);
       for (let key in ioSockets) {
-        sockets.push(ioSockets[key]);
-      }
-      // console.log(sockets[0].handshake);
-      console.log('array of all connected sockets is created');
-
-      sockets.forEach(async (socket) => {
-        // get userId
-        const sid = getId.SessionIdFromSocket(socket);
-        console.log('*****');
-        console.log(`wsServer ---  ${sid}`);
-        const session = await Session.findOne({ id: sid });
-        console.log(session);
-        const userId = session.userId;
-        console.log(userId);
-        console.log('*****');
-
-        if (room.users.indexOf(userId) !== -1) {
-          io.to(socket).emit('/chat/message/add', message);
-        };
-        console.log('80 --- ')
-        // console.log(socket.handshake);
-      });
-      console.log('------------------------');
-      // console.log(`back: on('/chat/message/send')`);
+        socketReceiver = ioSockets[key];
+        room.users.forEach((user) => {
+          if( String(sUserId) === String(user.userId) ) {
+            io.sockets.connected[socketReceiver.id].emit('/chat/message/add', message);
+          };
+        });
+      };
     });
     
     socket.on('disconnect', (reason) => {

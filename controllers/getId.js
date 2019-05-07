@@ -22,11 +22,11 @@ function SessionIdFromSocketGl(socket) {
 };
 
 async function userIdFromSession(sid) {
-    const session = await Session.findOne({ id: sid });
+    const session = await Session.findOne({ ID: sid });
     return session.userId;
 };
 
 module.exports.SessionIdFromSocket = SessionIdFromSocket;
-module.exports.SessionIdFromSocket = SessionIdFromSocketGl;
+module.exports.SessionIdFromSocketGl = SessionIdFromSocketGl;
 module.exports.userIdFromSession = userIdFromSession;
   

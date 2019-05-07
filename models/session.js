@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const generalSchema = new Schema ({
-    id: { 
+    ID: { 
         type: Schema.Types.String,
         required: true,
         unique: true

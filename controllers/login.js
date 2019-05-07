@@ -50,7 +50,7 @@ const loginAction = async (req, res, next) => {
         // create session for this user
         req.session.userId = user.id;
         const newSession = new Session ({
-            id: req.sessionID,
+            ID: req.sessionID,
             userId: req.session.userId
         });
         await newSession.save();
@@ -60,9 +60,12 @@ const loginAction = async (req, res, next) => {
             userId: user.id,
             dateConnected: user.createdAt
         };
-        room.users.push(newUser);
-        await room.save();
-
+        // room.users.push(newUser);
+        // await room.save();
+        await Room.update(
+            // { $push: { users: newUser },
+            { $addToSet: { users: newUser } },
+        );
         res.redirect('/chat');
     } catch (error) {
         console.error(error);

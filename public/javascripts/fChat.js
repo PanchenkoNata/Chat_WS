@@ -28,9 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('/chat/history/show', (messages) => {
+        const listHistory = document.querySelector('.chat-history');
+        listHistory.innerHTML = '';
         messages.forEach((message) => {
             console.log(`front: on /chat/history/show`);
-            const listHistory = document.querySelector('.chat-history');
             const messageData = document.createElement('li');
             messageData.innerHTML = `${message.user}: ${message.createdAt} <br/> ${message.content}`;
             listHistory.appendChild(messageData);
